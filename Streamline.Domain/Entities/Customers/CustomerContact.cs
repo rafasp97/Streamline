@@ -7,10 +7,16 @@ namespace Streamline.Domain.Entities.Customers
         public string Email { get; private set; }
         public Customer Customer { get; private set; }
 
-        protected CustomerContact() { } 
-
-        public CustomerContact(string phone, string email)
+        protected CustomerContact() 
         {
+            Phone = null!;
+            Email = null!;
+            Customer = null!;
+        } 
+
+        public CustomerContact(Customer customer, string phone, string email)
+        {
+            Customer = customer;
             Phone = phone;
             Email = email; 
         }

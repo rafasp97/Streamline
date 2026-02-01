@@ -7,10 +7,16 @@ namespace Streamline.Domain.Entities.Customers
         public int Id { get; private set; } 
         public string Name { get; private set; }
         public string Document { get; private set; }
-        public CustomerAddress? Address { get; private set; }
-        public CustomerContact? Contact { get; private set; }
+        public CustomerAddress Address { get; private set; }
+        public CustomerContact Contact { get; private set; }
 
-        protected Customer() { }
+        protected Customer()
+        {
+            Name = null!;
+            Document = null!;
+            Address = null!;
+            Contact = null!;
+        }
 
         public Customer(
             string name,
@@ -24,17 +30,17 @@ namespace Streamline.Domain.Entities.Customers
             string? complement = null)
         {
             Name = name; 
-            SetDocument(document); 
-            Contact = new CustomerContact(phone, email);
-            Address = new CustomerAddress(neighborhood, number, city, state, complement);
+            Document = SetDocument(document); 
+            Contact = new CustomerContact(this, phone, email);
+            Address = new CustomerAddress(this, neighborhood, number, city, state, complement);
         }
 
-        private void SetDocument(string document)
+        private string SetDocument(string document)
         {
             if (!Cpf.IsValid(document))
                 throw new InvalidOperationException("Document must be a valid CPF.");
 
-            Document = document;
+            return document;
         }
     }
 }

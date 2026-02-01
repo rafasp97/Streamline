@@ -16,11 +16,15 @@ namespace Streamline.Domain.Entities.Orders
         public IReadOnlyCollection<OrderProduct> OrderProduct => _orderProduct.AsReadOnly();
         public decimal Total { get; private set; }
 
-        protected Order() { }
-
-        private Order(int customerId)
+        protected Order()
         {
-            CustomerId = customerId;
+            Customer = null!;
+        }
+
+        public Order(Customer customer)
+        {
+            Customer = customer;
+            CustomerId = customer.Id;
             Status = EStatusOrder.Pending;
             Total = 0;
         }
@@ -44,7 +48,7 @@ namespace Streamline.Domain.Entities.Orders
             }
 
             _orderProduct.Add(
-                new OrderProduct(product, quantity)
+                new OrderProduct(this, product, quantity)
             );
             RecalculateTotal();
         }

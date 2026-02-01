@@ -10,10 +10,17 @@ namespace Streamline.Domain.Entities.Customers
         public string State { get; private set; }
         public Customer Customer { get; private set; }
 
-        protected CustomerAddress() { }
-
-        public CustomerAddress(string neighborhood, int number, string city, string state, string? complement = null)
+        protected CustomerAddress()
         {
+            Neighborhood = null!;
+            City = null!;
+            State = null!;
+            Customer = null!;
+        }
+
+        public CustomerAddress(Customer customer, string neighborhood, int number, string city, string state, string? complement = null)
+        {
+            Customer = customer;
             Neighborhood = neighborhood; 
             Number = number;             
             City = city;                

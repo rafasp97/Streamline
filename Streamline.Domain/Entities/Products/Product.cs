@@ -11,7 +11,10 @@ namespace Streamline.Domain.Entities.Products
         public int StockQuantity { get; private set; }
         public bool Active { get; private set; }
 
-        protected Product() { }
+        protected Product()
+        {
+            Name = null!;
+        }
 
         public Product(
             string name,
