@@ -2,7 +2,7 @@ using MediatR;
 using Streamline.Application.Repositories;
 using Streamline.Domain.Entities.Orders;
 using Streamline.Domain.Entities.Products;
-using Streamline.Application.Orders.CreateOrderProduct;
+using Streamline.Application.Orders;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
@@ -10,7 +10,7 @@ using System.Linq;
 namespace Streamline.Application.Orders.CreateOrder
 {
     public class CreateOrderCommandHandler 
-        : IRequestHandler<CreateOrderCommand, CreateOrderResult>
+        : IRequestHandler<CreateOrderCommand, OrderResult>
     {
         private readonly IOrderRepository _orderRepository;
         private readonly ICustomerRepository _customerRepository;
@@ -26,7 +26,7 @@ namespace Streamline.Application.Orders.CreateOrder
             _productRepository = productRepository;
         }
 
-        public async Task<CreateOrderResult> Handle(
+        public async Task<OrderResult> Handle(
             CreateOrderCommand request,
             CancellationToken cancellationToken)
         {
@@ -51,20 +51,23 @@ namespace Streamline.Application.Orders.CreateOrder
             _orderRepository.Add(order);
             await _orderRepository.SaveChangesAsync();
 
-            return new CreateOrderResult
+            return new OrderResult
             {
-                Name = customer.Name,
-                Email = customer.Contact!.Email,
-                Phone = customer.Contact!.Phone,
+                Id = order.Id,
                 Status = order.Status.ToString(),
-                Total = order.Total,
-                Products = order.OrderProduct.Select(orderProduct => new CreateOrderProductResult
+                Customer = new CustomerResult
+                {
+                    Name = order.Customer.Name,
+                    Email = order.Customer.Contact.Email,
+                    Phone = order.Customer.Contact.Phone
+                },
+                Products = order.OrderProduct.Select(orderProduct => new ProductResult
                 {
                     Name = orderProduct.Product.Name,
-                    UnitPrice = orderProduct.UnitPrice,
-                    Quantity = orderProduct.Quantity,
-                    Subtotal = orderProduct.Subtotal
-                }).ToList()
+                    UnitPrice = orderProduct.UnitPrice
+                }).ToList(),
+                Total = order.Total,
+                CreatedAt = order.CreatedAt
             };
         }
     }
