@@ -6,6 +6,8 @@ using Streamline.Application.Customers.CreateCustomer;
 using Microsoft.EntityFrameworkCore;
 using MediatR;
 using AutoMapper;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using Microsoft.OpenApi;
 
 namespace Streamline.API.Factory
 {
@@ -31,7 +33,25 @@ namespace Streamline.API.Factory
 
             builder.Services.AddAutoMapper(typeof(AppFactory));
 
+            builder.Services.AddMvc();
+
+            builder.Services.AddEndpointsApiExplorer();
+
+            builder.Services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new OpenApiInfo { Title = "Streamline E-commerce", Version = "v1" });
+                options.EnableAnnotations();
+            });
+
             var app = builder.Build();
+
+            app.MapSwagger();
+            app.UseSwagger();
+            app.UseSwaggerUI(options =>
+            {
+                options.SwaggerEndpoint("v1/swagger.json", "Streamline E-commerce");
+            });
+
             return app;
         }
     }

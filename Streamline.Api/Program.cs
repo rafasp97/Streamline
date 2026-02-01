@@ -15,10 +15,8 @@ var app = AppFactory.CreateApp(args);
 
 app.MapGet("/", () => "API rodando!");
 
-var api = app.MapGroup("/api");
+var api = app.MapGroup("/api/v1");
 
-
-// api/customer
 var customer = api.MapGroup("/customer");
 
 customer.MapPost("/", async (CreateCustomerDto dto, IMediator mediator, IMapper mapper) =>
@@ -26,6 +24,11 @@ customer.MapPost("/", async (CreateCustomerDto dto, IMediator mediator, IMapper 
     var command = mapper.Map<CreateCustomerCommand>(dto);
     var result = await mediator.Send(command);
     return Results.Ok(result);
-});
+})
+.WithTags("Customer")
+.WithMetadata(new Swashbuckle.AspNetCore.Annotations.SwaggerOperationAttribute(
+    summary: "Create a new customer",
+    description: "Endpoint to create a customer"
+));
 
 app.Run();
