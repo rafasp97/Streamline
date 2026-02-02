@@ -9,11 +9,13 @@ namespace Streamline.Application.Orders.PayOrderById
     {
         private readonly IOrderRepository _orderRepository;
         private readonly ILogRepository _logger;
+        private readonly IMessagePublisher _messagePublisher;
 
-        public PayOrderByIdCommandHandler(IOrderRepository orderRepository, ILogRepository logRepository)
+        public PayOrderByIdCommandHandler(IOrderRepository orderRepository, ILogRepository logRepository, IMessagePublisher messagePublisher)
         {
             _orderRepository = orderRepository;
             _logger = logRepository;
+            _messagePublisher = messagePublisher;
         }
 
         public async Task<OrderResult> Handle(PayOrderByIdCommand request, CancellationToken cancellationToken)
@@ -29,7 +31,10 @@ namespace Streamline.Application.Orders.PayOrderById
             }
 
             order.Pay();
+
             await _orderRepository.Update(order);
+
+            //CHAMAR O JOB PARA PROCESSAR O PEDIDO...
 
             await _logger.Low($"Payment process completed for OrderId = {request.Id}.");
 

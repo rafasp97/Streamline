@@ -4,7 +4,7 @@ namespace Streamline.Domain.Enums
     {
         Pending = 1,
         Paid = 2,
-        Processing = 3,
+        Processed = 3,
         Shipped = 4,
         Completed = 5,
         Cancelled = 6
