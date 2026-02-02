@@ -9,13 +9,11 @@ namespace Streamline.Application.Orders.PayOrderById
     {
         private readonly IOrderRepository _orderRepository;
         private readonly ILogRepository _logger;
-        private readonly IMessagePublisher _messagePublisher;
 
-        public PayOrderByIdCommandHandler(IOrderRepository orderRepository, ILogRepository logRepository, IMessagePublisher messagePublisher)
+        public PayOrderByIdCommandHandler(IOrderRepository orderRepository, ILogRepository logRepository)
         {
             _orderRepository = orderRepository;
             _logger = logRepository;
-            _messagePublisher = messagePublisher;
         }
 
         public async Task<OrderResult> Handle(PayOrderByIdCommand request, CancellationToken cancellationToken)
@@ -30,7 +28,7 @@ namespace Streamline.Application.Orders.PayOrderById
                 throw new InvalidOperationException("Order not found.");
             }
 
-            order.Pay();
+            order.StartProcessing();
 
             await _orderRepository.Update(order);
 

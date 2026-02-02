@@ -1,11 +1,10 @@
-using Streamline.Application.Messagings;
 using RabbitMQ.Client;
 using System.Text;
 using System.Text.Json;
 
 namespace Streamline.Infrastructure.Messaging.RabbitMq
 {
-    public class RabbitMqPublisher : IMessagePublisher
+    public class RabbitMqPublisher
     {
         private readonly IConnection _connection;
         private readonly IModel _channel;

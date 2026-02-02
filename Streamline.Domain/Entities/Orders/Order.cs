@@ -87,20 +87,20 @@ namespace Streamline.Domain.Entities.Orders
                         .Sum(p => p.Subtotal);
         }
 
-        public void Pay()
+        public void StartProcessing()
         {
-            if (Status != EStatusOrder.Pending)
-                throw new InvalidOperationException("Only pending orders can be paid.");
+            if (Status != EStatusOrder.Pending && Status != EStatusOrder.Failed)
+                throw new InvalidOperationException("Only pending or failed orders can be processing.");
 
             if(IsDeleted)
                 throw new InvalidOperationException("Cannot pay a deleted order.");
             
-            ValidateIfCanBePayAndConsumeProductStock();
+            ValidateCanBeProcessingBasedOnStock();
 
-            Status = EStatusOrder.Paid;
+            Status = EStatusOrder.Processing;
         }
 
-        private void ValidateIfCanBePayAndConsumeProductStock() {
+        private void ValidateCanBeProcessingBasedOnStock() {
 
             var listByOrderProduct = _orderProduct.Where(p => p.DeletedAt == null);
 
@@ -113,6 +113,21 @@ namespace Streamline.Domain.Entities.Orders
                     );
                 }
             }
+        }
+
+        public void Pay()
+        {
+            if (Status != EStatusOrder.Processing)
+                throw new InvalidOperationException("Only processing orders can be paid.");
+            
+            ConsumeProductStock();
+
+            Status = EStatusOrder.Processing;
+        }
+
+        private void ConsumeProductStock() {
+
+            var listByOrderProduct = _orderProduct.Where(p => p.DeletedAt == null);
 
             foreach (var item in listByOrderProduct)
             {
@@ -120,20 +135,28 @@ namespace Streamline.Domain.Entities.Orders
             }
         }
 
+        public void Fail()
+        {
+            if (Status != EStatusOrder.Processing)
+                throw new InvalidOperationException("Only processing orders can be Failed.");
+
+            Status = EStatusOrder.Failed;
+        }
+
         public void Process()
         {
             if (Status != EStatusOrder.Paid)
                 throw new InvalidOperationException("Only paid orders can be processed.");
 
-            Status = EStatusOrder.Processing;
+            Status = EStatusOrder.Processed;
         }
 
         public void Ship()
         {
-            if (Status != EStatusOrder.Processing)
-                throw new InvalidOperationException("Only Processing orders can be shipped.");
+            if (Status != EStatusOrder.Processed)
+                throw new InvalidOperationException("Only Processed orders can be shipped.");
 
-            Status = EStatusOrder.Processing;
+            Status = EStatusOrder.Shipped;
         }
 
         public void Completed()
@@ -141,7 +164,7 @@ namespace Streamline.Domain.Entities.Orders
             if (Status != EStatusOrder.Shipped)
                 throw new InvalidOperationException("Only shipped orders can be completed.");
 
-            Status = EStatusOrder.Processing;
+            Status = EStatusOrder.Completed;
         }
 
         public void Cancel()

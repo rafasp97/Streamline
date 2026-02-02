@@ -3,10 +3,12 @@ namespace Streamline.Domain.Enums
     public enum EStatusOrder
     {
         Pending = 1,
-        Paid = 2,
-        Processed = 3,
-        Shipped = 4,
-        Completed = 5,
-        Cancelled = 6
+        Processing = 2,
+        Paid = 3,
+        Processed = 4,
+        Shipped = 5,
+        Completed = 6,
+        Cancelled = 7,
+        Failed = 8
     }
 }
