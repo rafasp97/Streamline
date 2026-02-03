@@ -77,6 +77,18 @@ namespace Streamline.Infrastructure.Persistence.SqlServer.Repositories
                 .FirstOrDefaultAsync(o => o.DeletedAt == null && o.Id == id);
         }
 
+        public async Task<List<Order>> GetFailedOrders()
+        {
+            return await _context.Order
+                .Include(o => o.Customer)
+                .ThenInclude(c => c.Contact)
+                .Include(o => o.OrderProduct
+                .Where(op => op.DeletedAt == null))
+                .ThenInclude(op => op.Product)
+                .Where(o => o.DeletedAt == null && o.Status == EStatusOrder.Failed)
+                .ToListAsync();
+        }
+
         public async Task Update(Order order)
         {
             _context.Order.Update(order);

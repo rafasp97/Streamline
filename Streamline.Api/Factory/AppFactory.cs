@@ -15,6 +15,9 @@ using Streamline.Infrastructure.Messaging.RabbitMq;
 using Streamline.Infrastructure.Queues;
 using Streamline.Infrastructure.BackgroundWorkers.Workers;
 using RabbitMQ.Client;
+using Streamline.Infrastructure.BackgroundWorkers.Hangfire;
+using Hangfire;
+using Hangfire.MemoryStorage;
 
 namespace Streamline.API.Factory
 {
@@ -76,6 +79,14 @@ namespace Streamline.API.Factory
             builder.Services.AddHostedService(provider => (OrderProcessingQueue)provider.GetRequiredService<IOrderProcessingQueue>());
             builder.Services.AddHostedService<RabbitMqConsumerQueue>();
 
+
+            builder.Services.AddHangfire(config =>
+            {
+                config.UseMemoryStorage();
+            });
+            builder.Services.AddTransient<RetryFaildedOrdersWorker>();
+            builder.Services.AddHangfireServer();
+
             builder.Services.AddAutoMapper(typeof(AppFactory));
 
             builder.Services.AddMvc();
@@ -91,6 +102,12 @@ namespace Streamline.API.Factory
             });
 
             var app = builder.Build();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var recurringJobManager = scope.ServiceProvider.GetRequiredService<IRecurringJobManager>();
+                HangfireSettings.ConfigureJobs(recurringJobManager);
+            }
 
             app.MapSwagger();
 
