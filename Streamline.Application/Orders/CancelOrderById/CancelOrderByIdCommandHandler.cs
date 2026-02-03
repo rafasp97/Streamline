@@ -1,5 +1,5 @@
 using MediatR;
-using Streamline.Application.Repositories;
+using Streamline.Application.Interfaces.Repositories;
 using Streamline.Application.Orders;
 
 namespace Streamline.Application.Orders.CancelOrderById

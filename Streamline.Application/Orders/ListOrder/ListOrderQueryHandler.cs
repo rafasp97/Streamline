@@ -1,5 +1,5 @@
 using MediatR;
-using Streamline.Application.Repositories;
+using Streamline.Application.Interfaces.Repositories;
 
 namespace Streamline.Application.Orders.ListOrder
 {

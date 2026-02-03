@@ -1,7 +1,7 @@
 using MongoDB.Driver;
 using Streamline.Domain.Entities.Logs;
 using Streamline.Domain.Enums;
-using Streamline.Application.Repositories;
+using Streamline.Application.Interfaces.Repositories;
 using Streamline.Infrastructure.Persistence.MongoDb.DbContexts;
 
 

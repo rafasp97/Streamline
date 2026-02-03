@@ -1,7 +1,7 @@
 using Streamline.Domain.Entities.Customers;
 using System.Threading.Tasks;
 
-namespace Streamline.Application.Repositories
+namespace Streamline.Application.Interfaces.Repositories
 {
     public interface ICustomerRepository
     {

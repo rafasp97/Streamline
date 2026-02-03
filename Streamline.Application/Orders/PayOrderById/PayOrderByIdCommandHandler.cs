@@ -1,5 +1,5 @@
 using MediatR;
-using Streamline.Application.Repositories;
+using Streamline.Application.Interfaces.Repositories;
 using Streamline.Application.Interfaces.Queues;
 using Streamline.Application.Orders;
 

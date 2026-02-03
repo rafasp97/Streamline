@@ -4,7 +4,7 @@ using MediatR;
 using AutoMapper;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Microsoft.OpenApi;
-using Streamline.Application.Repositories;
+using Streamline.Application.Interfaces.Repositories;
 using Streamline.Application.Interfaces.Queues;
 using Streamline.Application.Customers.CreateCustomer;
 using Streamline.Application.Products.CreateProduct;

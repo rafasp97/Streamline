@@ -2,7 +2,7 @@ using Streamline.Domain.Entities.Orders;
 using Streamline.Domain.Enums;
 using System.Threading.Tasks;
 
-namespace Streamline.Application.Repositories
+namespace Streamline.Application.Interfaces.Repositories
 {
     public interface IOrderRepository
     {

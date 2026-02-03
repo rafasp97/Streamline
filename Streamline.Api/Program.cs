@@ -11,7 +11,7 @@ using Streamline.Application.Orders.CreateOrder;
 using Streamline.API.Customers.Routes;
 using Streamline.API.Products.Routes;
 using Streamline.API.Orders.Routes;
-using Streamline.Application.Repositories;
+using Streamline.Application.Interfaces.Repositories;
 using Streamline.API.Customers.Mapping;
 using Streamline.API.Customers.Dtos;
 using Streamline.API.Products.Mapping;

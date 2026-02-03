@@ -1,7 +1,7 @@
 using Streamline.Domain.Entities.Customers;
 using Microsoft.EntityFrameworkCore;
 using Streamline.Infrastructure.Persistence.SqlServer.DbContexts;
-using Streamline.Application.Repositories;
+using Streamline.Application.Interfaces.Repositories;
 using System.Threading.Tasks;
 
 namespace Streamline.Infrastructure.Persistence.SqlServer.Repositories

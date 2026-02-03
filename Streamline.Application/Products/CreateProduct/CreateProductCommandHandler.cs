@@ -1,4 +1,4 @@
-using Streamline.Application.Repositories;
+using Streamline.Application.Interfaces.Repositories;
 using Streamline.Domain.Entities.Products;
 using MediatR;
 using System.Threading;
