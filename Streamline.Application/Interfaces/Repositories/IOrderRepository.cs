@@ -8,7 +8,7 @@ namespace Streamline.Application.Interfaces.Repositories
     {
         void Add(Order order);
         Task<int> SaveChanges();
-        Task<List<Order>> GetAll(EStatusOrder? status, int? customerId, DateTime? createdFrom, DateTime? createdTo);
+        Task<(int total, List<Order> items)>  GetAll(int page, int limit, EStatusOrder? status, int? customerId, DateTime? createdFrom, DateTime? createdTo);
         Task<Order?> GetById(int Id);
         Task Update(Order order);
     }

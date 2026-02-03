@@ -26,19 +26,22 @@ namespace Streamline.Infrastructure.Persistence.SqlServer.Repositories
             return await _context.SaveChangesAsync();
         }
 
-        public async Task<List<Order>> GetAll(
+        public async Task<(int total, List<Order> items)> GetAll(
+            int page,
+            int limit,
             EStatusOrder? status,
             int? customerId,
             DateTime? createdFrom,
             DateTime? createdTo)
         {
+            var skip = (page - 1) * limit;
+
             var query = _context.Order
                 .Include(o => o.Customer)
                 .ThenInclude(c => c.Contact)
                 .Include(o => o.OrderProduct)
                 .ThenInclude(op => op.Product)
-                .Where(o => o.DeletedAt == null)
-                .AsQueryable();
+                .Where(o => o.DeletedAt == null);
 
             if (status.HasValue)
                 query = query.Where(o => o.Status == status.Value);
@@ -52,7 +55,15 @@ namespace Streamline.Infrastructure.Persistence.SqlServer.Repositories
             if (createdTo.HasValue)
                 query = query.Where(o => o.CreatedAt <= createdTo.Value);
 
-            return await query.ToListAsync();
+            var total = await query.CountAsync();
+
+            var orders = await query
+                .OrderBy(o => o.Id)
+                .Skip(skip)
+                .Take(limit)
+                .ToListAsync();
+
+            return (total, orders);
         }
 
         public async Task<Order?> GetById(int id)

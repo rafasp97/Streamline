@@ -28,7 +28,9 @@ namespace Streamline.Application.Handlers
                 $"CreatedTo = {request.CreatedTo}."
             );
             
-            var orders = await _orderRepository.GetAll(
+           var (total, orders) = await _orderRepository.GetAll(
+                request.Page,
+                request.Limit,
                 request.Status,
                 request.CustomerId,
                 request.CreatedFrom,
@@ -38,7 +40,10 @@ namespace Streamline.Application.Handlers
             await _logger.Low("Order listing query completed successfully.");
             
             return new ListOrderResult
-            {
+            {   
+                Total = total,
+                Page = request.Page,
+                Limit = request.Limit,
                 Orders = orders.Select(order => new OrderResult
                 {
                     Id = order.Id,

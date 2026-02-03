@@ -16,14 +16,18 @@ namespace Streamline.API.Routes
                 .WithTags("Order");
 
             group.MapGet("/", async (
-                EStatusOrder? status,
-                int? customerId,
-                DateTime? createdFrom,
-                DateTime? createdTo,
-                IMediator mediator) =>
+                IMediator mediator,
+                int page = 1,
+                int limit = 10,
+                EStatusOrder? status = null,
+                int? customerId = null,
+                DateTime? createdFrom = null,
+                DateTime? createdTo = null) =>
             {
                 var query = new ListOrderQuery
                 {
+                    Page = Math.Max(page, 1),
+                    Limit = Math.Max(limit, 10),
                     Status = status,
                     CustomerId = customerId,
                     CreatedFrom = createdFrom,
