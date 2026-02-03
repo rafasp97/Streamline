@@ -29,72 +29,58 @@ namespace Streamline.API.Factory
 
             var builder = WebApplication.CreateBuilder(args);
 
-            var sqlConnection = Environment.GetEnvironmentVariable("SQLSERVER_CONNECTION");
-            var mongoConnection = Environment.GetEnvironmentVariable("MONGO_CONNECTION");
-            var mongoDatabase = Environment.GetEnvironmentVariable("MONGO_DATABASE");
-            var rabbitConnection = Environment.GetEnvironmentVariable("RABBITMQ_CONNECTION");
-
-            if (
-                string.IsNullOrEmpty(mongoConnection) || 
-                string.IsNullOrEmpty(mongoDatabase) ||
-                string.IsNullOrEmpty(sqlConnection) ||
-                string.IsNullOrEmpty(rabbitConnection))
-            {
-                throw new InvalidOperationException("Variáveis de ambiente não definidas.");
-            }
-
-            builder.Services.AddDbContext<SqlServerDbContext>(options =>
-                options.UseSqlServer(sqlConnection));
-
+            var sqlConnection = GetEnv("SQLSERVER_CONNECTION");
+            var mongoConnection = GetEnv("MONGO_CONNECTION");
+            var mongoDatabase = GetEnv("MONGO_DATABASE");
+            var rabbitConnection = GetEnv("RABBITMQ_CONNECTION");
+            
+            // Configurações de Banco de Dados
+            builder.Services.AddDbContext<SqlServerDbContext>(o => o.UseSqlServer(sqlConnection));
             builder.Services.AddSingleton(new MongoDbContext(mongoConnection, mongoDatabase));
+
+            // Configurações RabbitMQ
             builder.Services.AddSingleton(new RabbitMqSettings(rabbitConnection));
             builder.Services.AddSingleton<RabbitMqPublisher>();
             builder.Services.AddSingleton<RabbitMqConsumer>();
             builder.Services.AddSingleton<IOrderProcessingQueue, OrderProcessingQueue>();
             builder.Services.AddSingleton<IServiceScopeFactory>(sp => sp.GetRequiredService<IServiceScopeFactory>());
-
             builder.Services.AddSingleton<IConnection>(sp =>
             {
                 var settings = sp.GetRequiredService<RabbitMqSettings>();
-                var factory = new RabbitMQ.Client.ConnectionFactory() 
-                { 
-                    Uri = new Uri(settings.ConnectionString) 
-                };
-                return factory.CreateConnection();
+                return new ConnectionFactory { Uri = new Uri(settings.ConnectionString) }.CreateConnection();
             });
 
-            builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
-            builder.Services.AddScoped<IProductRepository, ProductRepository>();
-            builder.Services.AddScoped<IOrderRepository, OrderRepository>();
-            builder.Services.AddScoped<ILogRepository, LogRepository>();
-            builder.Services.AddScoped<OrderRepository>();
-            builder.Services.AddScoped<LogRepository>();
-            builder.Services.AddScoped<OrderProcessingWorker>();
-
-            builder.Services.AddMediatR(config =>
+            // Repositórios
+            AddScopedServices(builder, new (Type service, Type implementation)[]
             {
-                config.RegisterServicesFromAssemblies(AppDomain.CurrentDomain.GetAssemblies());
+                (typeof(ICustomerRepository), typeof(CustomerRepository)),
+                (typeof(IProductRepository), typeof(ProductRepository)),
+                (typeof(IOrderRepository), typeof(OrderRepository)),
+                (typeof(ILogRepository), typeof(LogRepository)),
+                (typeof(OrderRepository), typeof(OrderRepository)),
+                (typeof(LogRepository), typeof(LogRepository)),
+                (typeof(OrderProcessingWorker), typeof(OrderProcessingWorker))
             });
 
+            // MediatR
+            builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(AppDomain.CurrentDomain.GetAssemblies()));
+
+            // Hosted Services
             builder.Services.AddHostedService(provider => (OrderProcessingQueue)provider.GetRequiredService<IOrderProcessingQueue>());
             builder.Services.AddHostedService<RabbitMqConsumerQueue>();
-
-
-            builder.Services.AddHangfire(config =>
-            {
-                config.UseMemoryStorage();
-            });
-            builder.Services.AddTransient<RetryFaildedOrdersWorker>();
-            builder.Services.AddHangfireServer();
-
-            builder.Services.AddAutoMapper(typeof(AppFactory));
-
-            builder.Services.AddMvc();
-
-            builder.Services.AddEndpointsApiExplorer();
-
             builder.Services.AddHostedService<OrderProcessingQueue>();
 
+            // Hangfire
+            builder.Services.AddHangfire(cfg => cfg.UseMemoryStorage());
+            builder.Services.AddHangfireServer();
+            builder.Services.AddTransient<RetryFaildedOrdersWorker>();
+
+             // AutoMapper
+            builder.Services.AddAutoMapper(typeof(AppFactory));
+
+            // MVC & Swagger
+            builder.Services.AddMvc();
+            builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(options =>
             {
                 options.SwaggerDoc("v1", new OpenApiInfo { Title = "Streamline E-commerce", Version = "v1" });
@@ -103,6 +89,7 @@ namespace Streamline.API.Factory
 
             var app = builder.Build();
 
+            // Configura Jobs do Hangfire
             using (var scope = app.Services.CreateScope())
             {
                 var recurringJobManager = scope.ServiceProvider.GetRequiredService<IRecurringJobManager>();
@@ -112,13 +99,24 @@ namespace Streamline.API.Factory
             app.MapSwagger();
 
             app.UseSwagger();
-            
-            app.UseSwaggerUI(options =>
-            {
-                options.SwaggerEndpoint("v1/swagger.json", "Streamline E-commerce");
-            });
+            app.UseSwaggerUI(cfg => cfg.SwaggerEndpoint("v1/swagger.json", "Streamline E-commerce"));
+
 
             return app;
+        }
+
+        private static string GetEnv(string key)
+        {
+            var value = Environment.GetEnvironmentVariable(key);
+            if (string.IsNullOrEmpty(value))
+                throw new InvalidOperationException($"Variável de ambiente '{key}' não definida.");
+            return value;
+        }
+
+        private static void AddScopedServices(WebApplicationBuilder builder, (Type service, Type implementation)[] services)
+        {
+            foreach (var (service, implementation) in services)
+                builder.Services.AddScoped(service, implementation);
         }
     }
 }
