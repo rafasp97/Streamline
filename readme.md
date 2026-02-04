@@ -2,7 +2,7 @@
 
 A Streamline API é uma aplicação desenvolvida para simular o fluxo completo de processamento de pedidos em um e-commerce moderno. Seu principal objetivo é fornecer uma plataforma robusta para gerenciar usuários, produtos e pedidos, integrando regras de negócio consistentes, mensageria assíncrona e processamento de dados confiável.
 
-## Principais funcionalidades:
+## 📌 Principais funcionalidades:
 
 - **Gestão de Clientes (Customers):** permite a criação de usuários que realizam pedidos.
 - **Gestão de Produtos (Products):** possibilita o cadastro produtos disponíveis para venda.
@@ -11,7 +11,7 @@ A Streamline API é uma aplicação desenvolvida para simular o fluxo completo d
 
 ---
 
-## 🧠 Tecnologias
+## 🛠️ Tecnologias
 
 - **.NET 10**
 - **SQL Server**
@@ -23,7 +23,7 @@ A Streamline API é uma aplicação desenvolvida para simular o fluxo completo d
 
 ---
 
-## Arquitetura utilizada
+## ⚙️ Arquitetura utilizada
 - **CQRS (Command Query Responsibility Segregation)**
 - **DDD (Domain-Driven Design)**
 - **Clean Architecture**
@@ -73,29 +73,7 @@ Streamline
 
 ---
 
-## ✅ Pré-requisitos
-
-- Docker
-- Docker Compose
-
----
-
-## 🚀 Como Executar com Docker Compose
-
-1. **Clone o repositório:**
-
-```bash
-git clone https://github.com/rafasp97/Streamline.git
-cd Streamline.Api
-```
-
-2. **Acesse a Camada de API**
-
-```bash
-cd Streamline.Api
-```
-
-3. **Crie e Preencha as Variáveis de Ambiente (.env)**
+## Variáveis de Ambiente (Streamline.Api/.Env)
 
 ```env
 # ========================
@@ -132,17 +110,37 @@ RABBITMQ_PASS=               # admin
 RABBITMQ_URI=                # amqp://admin:admin@localhost:5672/
 ```
 
+---
 
-4. **Execute o Docker Compose:**
+## ✅ Pré-requisitos
+
+- Docker
+- Docker Compose
+
+---
+
+## ▶️ Como Executar
+
+1. **Clone o repositório:**
+
+```bash
+git clone https://github.com/rafasp97/Streamline.git
+cd Streamline.Api
+```
+
+2. **Acesse a Camada de API**
+
+```bash
+cd Streamline.Api
+```
+
+3. **Execute o Docker Compose:**
 
 ```bash
 docker compose up -d
 ```
 
-5. **Build**
-
-
-6. **Execute para compilar e atualizar as migrations**
+4. **Execute para compilar e injetar as migrations**
 
 ```bash
 dotnet ef database update --project ../Streamline.Infrastructure --startup-project .
