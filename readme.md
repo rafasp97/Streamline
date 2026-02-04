@@ -7,7 +7,7 @@ A Streamline API é uma aplicação desenvolvida para simular o fluxo completo d
 - **Gestão de Clientes (Customers):** permite a criação de usuários que realizam pedidos.
 - **Gestão de Produtos (Products):** possibilita o cadastro produtos disponíveis para venda.
 - **Processamento de Pedidos (Orders):** cria pedidos relacionando clientes e produtos, realizando o cálculo de valores, validação de estoque e registro de logs das operações.
-- **Fluxo Assíncrono e Mensageria:** simula o processamento de pedidos em background, incluindo pagamento e atualização de status de entrega. Utiliza workers para processamentos agendados, retry de falhas e mensageria que simula notificações de envio e entrega ao cliente.
+- **Fluxo Assíncrono e Mensageria:** simula o processamento de pedidos em background, incluindo pagamento e processamento. Utiliza workers agendados para retry de falhas e mensageria que simula notificações de envio à entrega ao cliente.
 
 ---
 
@@ -17,7 +17,7 @@ A Streamline API é uma aplicação desenvolvida para simular o fluxo completo d
 - **SQL Server**
 - **MongoDB**
 - **RabbitMQ**
--- **MediatR**
+- **MediatR**
 - **Hangfire**
 - **Docker Compose**
 - **Entity Framework Core**
