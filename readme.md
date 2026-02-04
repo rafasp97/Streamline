@@ -17,6 +17,7 @@ A Streamline API é uma aplicação desenvolvida para simular o fluxo completo d
 - **SQL Server**
 - **MongoDB**
 - **RabbitMQ**
+-- **MediatR**
 - **Hangfire**
 - **Docker Compose**
 - **Entity Framework Core**
