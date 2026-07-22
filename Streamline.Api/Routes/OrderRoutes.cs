@@ -67,7 +67,7 @@ namespace Streamline.API.Routes
             ));
 
 
-            group.MapPost("/{id}/pay", async (int id, IMediator mediator) =>
+            group.MapPatch("/{id}/pay", async (int id, IMediator mediator) =>
             {   
                 // TODO: implementar DTO com dados de pagamento.
                 var result = await mediator.Send(new PayOrderByIdCommand { Id = id });
@@ -78,7 +78,7 @@ namespace Streamline.API.Routes
                 description: "Processes the payment for a specific order."
             ));
 
-            group.MapPost("/{id}/cancel", async (int id, IMediator mediator) =>
+            group.MapPatch("/{id}/cancel", async (int id, IMediator mediator) =>
             {   
                 // TODO: implementar DTO com dados de cancelamento: motivo, etc..
                 var result = await mediator.Send(new CancelOrderByIdCommand { Id = id });
